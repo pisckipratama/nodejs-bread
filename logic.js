@@ -149,9 +149,36 @@ function menuMhs() {
                 break;
 
             case '4':
-                console.log('hapus mah nanti wkwkwkwkwwk');
-                menuMhs();
+                let table3 = new Table({
+                    head: ['NIM', 'Nama', 'alamat', 'jurusan'],
+                    colWidths: [7, 20, 15, 10]
+                })
+                console.log(space);
+                rl.question('Masukkan NIM yang akan dihapus: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `delete from mahasiswa where nim=${parseInt(ans)}`;
+                        db.run(sql, (err) => {
+                            if (err) throw err;
+                            console.log(`Mahasiswa dengan NIM: ${ans} telah dihapus`)
+                            console.log(space);
+                            let sql = 'select * from mahasiswa';
+                            db.all(sql, (err, rows) => {
+                                if (err) throw err;
+                                if (rows) {
+                                    rows.forEach(mhs => {
+                                        table3.push(
+                                            [`${mhs.nim}`, `${mhs.nama_mahasiswa}`, `${mhs.alamat}`, `${mhs.id_jurusan}`]
+                                        )
+                                    })
+                                    console.log(`${table3.toString()}`);
+                                    menuMhs();
+                                }
+                            })
+                        })
+                    })
+                })
                 break;
+
             case '5':
                 menu();
                 break;
@@ -250,16 +277,44 @@ function menuDosen() {
                     })
                 })
                 break;
+
             case '4':
-                console.log('hapus mah nanti wkwkwkwkwwk');
-                menuMhs();
+                let table3 = new Table({
+                    head: ['ID', 'Nama'],
+                    colWidths: [7, 20]
+                })
+                console.log(space);
+                rl.question('Masukkan ID yang akan dihapus: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `delete from dosen where id_dosen=${parseInt(ans)}`;
+                        db.run(sql, (err) => {
+                            if (err) throw err;
+                            console.log(`Dosen dengan ID: ${ans} telah dihapus`)
+                            console.log(space);
+                            let sql = 'select * from dosen';
+                            db.all(sql, (err, rows) => {
+                                if (err) throw err;
+                                if (rows) {
+                                    rows.forEach(dosen => {
+                                        table3.push(
+                                            [`${dosen.id_dosen}`, `${dosen.nama_dosen}`]
+                                        )
+                                    })
+                                    console.log(`${table3.toString()}`);
+                                    menuDosen();
+                                }
+                            })
+                        })
+                    })
+                })
                 break;
+
             case '5':
                 menu();
                 break;
             default:
                 console.log('List yang dimaksud tidak ada');
-                menuMhs();
+                menuDosen();
                 break;
         }
     })
