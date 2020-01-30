@@ -16,13 +16,14 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 })
+let space = '=================================================';
 
-let msg = `=================================================
+let msg = `${space}
 welcome to UPI
 Jl. Kopo 163
-=================================================`
+${space}`
 
-let list = `=================================================
+let list = `${space}
 silahkan pilih opsi di bawah ini
 [1] Mahasiswa
 [2] Jurusan
@@ -30,16 +31,16 @@ silahkan pilih opsi di bawah ini
 [4] mata kuliah
 [5] kontrak
 [6] keluar
-=================================================`
+${space}`
 
-let listMhs = `=================================================
+let listMhs = `${space}
 silahkan pilih opsi di bawah ini
 [1] daftar murid
 [2] cari murid
 [3] tambah murid
 [4] hapus murid
 [5] kembali
-=================================================`
+${space}`
 
 function menuMhs() {
     console.log(listMhs);
@@ -50,7 +51,6 @@ function menuMhs() {
                     head: ['NIM', 'Nama', 'alamat', 'jurusan'],
                     colWidths: [7, 20, 10, 10]
                 })
-
                 db.serialize(() => {
                     let sql = 'select * from mahasiswa';
                     db.all(sql, (err, rows) => {
@@ -66,15 +66,32 @@ function menuMhs() {
                         }
                     })
                 });
-
-                db.close();
                 break;
 
             case '2':
-                console.log(`=================================================`)
-                console.log('cari mah nanti wkwkwkwkwwk');
-                menuMhs();
+                console.log(space);
+                rl.question('masukkan nim: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `select * from mahasiswa where nim=${parseInt(ans)}`;
+                        db.all(sql, (err, rows) => {
+                            if (err) throw err;
+                            if (rows.length === 1) {
+                                console.log(space);
+                                console.log('student details')
+                                console.log(space);
+                                rows.forEach(mhs => {
+                                    console.log(`nim\t: ${mhs.nim}\nnama\t: ${mhs.nama_mahasiswa}\nalamat\t: ${mhs.alamat}\njurusan\t: ${mhs.id_jurusan}`);
+                                })
+                                menuMhs();
+                            } else {
+                                console.log(`mahasiswa dengan nim ${ans} tidak terdaftar`);
+                                menuMhs();
+                            }
+                        })
+                    });
+                })
                 break;
+
             case '3':
                 console.log('tambah mah nanti wkwkwkwkwwk');
                 menuMhs();
