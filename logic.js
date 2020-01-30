@@ -1,5 +1,16 @@
+// challange 18 Rubicamp: University
+
+// cli-table
+const Table = require('cli-table');
+
+// database connection
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./university.db');
+const dbFile = __dirname + "/db/university.db";
+const db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, (err) => {
+    if (err) throw err;
+});
+
+// readline
 const readline = require('readline');
 const rl = readline.createInterface({
     input: process.stdin,
@@ -35,16 +46,32 @@ function menuMhs() {
     rl.question('masukkan opsi: ', (answer) => {
         switch (answer) {
             case '1':
-                db.all(`select * from mahasiswa`, (err, mhs) => {
-                    console.log(mhs);
-                    menuMhs();
+                let table = new Table({
+                    head: ['NIM', 'Nama', 'alamat', 'jurusan'],
+                    colWidths: [7, 20, 10, 10]
                 })
+
+                db.serialize(() => {
+                    let sql = 'select * from mahasiswa';
+                    db.all(sql, (err, rows) => {
+                        if (err) throw err;
+                        if (rows) {
+                            rows.forEach(mhs => {
+                                table.push(
+                                    [`${mhs.nim}`, `${mhs.nama_mahasiswa}`, `${mhs.alamat}`, `${mhs.id_jurusan}`]
+                                )
+                            })
+                            console.log(`${table.toString()}`);
+                            menuMhs();
+                        }
+                    })
+                });
+
+                db.close();
                 break;
+
             case '2':
                 console.log(`=================================================`)
-                rl.question('Masukkan NIM: ', (answer) => {
-                    if (answer) {}
-                })
                 console.log('cari mah nanti wkwkwkwkwwk');
                 menuMhs();
                 break;
