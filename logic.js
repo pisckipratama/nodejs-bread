@@ -60,6 +60,15 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
+let listMatkul = `${space}
+silahkan pilih opsi di bawah ini
+[1] daftar mata kuliah
+[2] cari mata kuliah
+[3] tambah mata kuliah
+[4] hapus mata kuliah
+[5] kembali
+${space}`
+
 const menuMhs = () => {
     console.log(listMhs);
     rl.question('masukkan opsi: ', (answer) => {
@@ -459,6 +468,140 @@ const menuDosen = () => {
     })
 }
 
+const menuMatkul = () => {
+    console.log(listMatkul);
+    rl.question('masukkan opsi: ', (answer) => {
+        switch (answer) {
+            case '1':
+                let table = new Table({
+                    head: ['ID', 'Nama', 'SKS'],
+                    colWidths: [7, 30, 7]
+                })
+                db.serialize(() => {
+                    let sql = 'select * from mata_kuliah';
+                    db.all(sql, (err, rows) => {
+                        if (err) throw err;
+                        if (rows) {
+                            rows.forEach(matkul => {
+                                table.push(
+                                    [`${matkul.id_matkul}`, `${matkul.nama_matkul}`, `${matkul.sks}`]
+                                )
+                            })
+                            console.log(`${table.toString()}`);
+                            menuMatkul();
+                        }
+                    })
+                });
+                break;
+
+            case '2':
+                console.log(space);
+                rl.question('masukkan ID matkul: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `select * from mata_kuliah where id_matkul=${parseInt(ans)}`;
+                        db.all(sql, (err, rows) => {
+                            if (err) throw err;
+                            if (rows.length === 1) {
+                                console.log(space);
+                                console.log('mata kuliah details')
+                                console.log(space);
+                                rows.forEach(matkul => {
+                                    console.log(`ID\t: ${matkul.id_matkul}\nnama\t: ${matkul.nama_matkul}\nsks\t: ${matkul.sks}`);
+                                })
+                                menuMatkul();
+                            } else {
+                                console.log(`mata kuliah dengan ID ${ans} tidak terdaftar`);
+                                menuMatkul();
+                            }
+                        })
+                    });
+                })
+                break;
+
+            case '3':
+                console.log(space);
+                console.log('lengkapi data dibawah ini: ');
+                let forAddMatkul = {
+                    id: 0,
+                    name: '',
+                    sks: 0
+                };
+                let table2 = new Table({
+                    head: ['ID', 'Nama', 'SKS'],
+                    colWidths: [7, 30, 7]
+                })
+                rl.question('ID: ', (ans) => {
+                    forAddMatkul.id = parseInt(ans);
+                    rl.question('Nama: ', (ans) => {
+                        forAddMatkul.name = ans;
+                        rl.question('SKS: ', (ans) => {
+                            forAddMatkul.sks = ans;
+                            db.serialize(() => {
+                                let sql = `insert into mata_kuliah(id_matkul, nama_matkul, sks) values(${forAddMatkul.id}, '${forAddMatkul.name}', ${forAddMatkul.sks})`;
+                                db.run(sql, (err) => {
+                                    if (err) throw err;
+                                    let sql = 'select * from mata_kuliah';
+                                    db.all(sql, (err, rows) => {
+                                        if (err) throw err;
+                                        if (rows) {
+                                            rows.forEach(matkul => {
+                                                table2.push(
+                                                    [`${matkul.id_matkul}`, `${matkul.nama_matkul}`, `${matkul.sks}`]
+                                                )
+                                            })
+                                            console.log(`${table2.toString()}`);
+                                            menuMatkul();
+                                        }
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+                break;
+
+            case '4':
+                let table3 = new Table({
+                    head: ['ID', 'Nama', 'SKS'],
+                    colWidths: [7, 30, 7]
+                })
+                console.log(space);
+                rl.question('Masukkan ID yang akan dihapus: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `delete from mata_kuliah where id_matkul=${parseInt(ans)}`;
+                        db.run(sql, (err) => {
+                            if (err) throw err;
+                            console.log(`Mata kuliah dengan ID: ${ans} telah dihapus`)
+                            console.log(space);
+                            let sql = 'select * from mata_kuliah';
+                            db.all(sql, (err, rows) => {
+                                if (err) throw err;
+                                if (rows) {
+                                    rows.forEach(matkul => {
+                                        table3.push(
+                                            [`${matkul.id_matkul}`, `${matkul.nama_matkul}`, `${matkul.sks}`]
+                                        )
+                                    })
+                                    console.log(`${table3.toString()}`);
+                                    menuMatkul();
+                                }
+                            })
+                        })
+                    })
+                })
+                break;
+
+            case '5':
+                menu();
+                break;
+            default:
+                console.log('List yang dimaksud tidak ada');
+                menuMatkul();
+                break;
+        }
+    })
+}
+
 const menu = () => {
     console.log(list);
     rl.question('masukkan no list diatas: ', (answer) => {
@@ -473,6 +616,10 @@ const menu = () => {
 
             case '3':
                 menuDosen();
+                break;
+
+            case '4':
+                menuMatkul();
                 break;
 
             case '6':
