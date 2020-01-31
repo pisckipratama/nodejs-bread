@@ -611,6 +611,44 @@ const menuMatkul = () => {
     })
 }
 
+const menuKontrak = () => {
+    console.log(listKontrak);
+    rl.question('Masukkan opsi: ', (ans) => {
+        switch (ans) {
+            case '1':
+                let table = new Table({
+                    head: ['ID', 'Nilai', 'NIM', 'ID Matkul', 'ID Dosen'],
+                    colWidths: [7, 7, 7, 10, 10]
+                })
+                db.serialize(() => {
+                    let sql = 'select * from kontrak';
+                    db.all(sql, (err, rows) => {
+                        if (err) throw err;
+                        if (rows) {
+                            rows.forEach(kontrak => {
+                                table.push(
+                                    [`${kontrak.id_kontrak}`, `${kontrak.nilai}`, `${kontrak.nim}`, `${kontrak.id_matkul}`, `${kontrak.id_dosen}`]
+                                )
+                            })
+                            console.log(`${table.toString()}`);
+                            menuKontrak();
+                        }
+                    })
+                });
+                break;
+            
+            case '5':
+                menu();
+                break;
+                
+            default:
+                console.log('Baru ada fitur read aja ya broo wkwkw, sabar');
+                menuKontrak();
+                break;
+        }
+    })
+}
+
 const menu = () => {
     console.log(list);
     rl.question('masukkan no list diatas: ', (answer) => {
@@ -629,6 +667,10 @@ const menu = () => {
 
             case '4':
                 menuMatkul();
+                break;
+
+            case '5':
+                menuKontrak();
                 break;
 
             case '6':
