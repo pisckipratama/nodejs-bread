@@ -16,14 +16,16 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 })
-let space = '=================================================';
 
-let msg = `${space}
-welcome to UPI
-Jl. Kopo 163
+// for displaying menu
+const space = '=================================================';
+
+const msg = `${space}
+Welcome to Universitas Pendidikan Indonesia
+Jl Setiabudhi No. 255
 ${space}`
 
-let list = `${space}
+const list = `${space}
 silahkan pilih opsi di bawah ini
 [1] Mahasiswa
 [2] Jurusan
@@ -33,7 +35,7 @@ silahkan pilih opsi di bawah ini
 [6] keluar
 ${space}`
 
-let listMhs = `${space}
+const listMhs = `${space}
 silahkan pilih opsi di bawah ini
 [1] daftar murid
 [2] cari murid
@@ -42,7 +44,7 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
-let listDosen = `${space}
+const listDosen = `${space}
 silahkan pilih opsi di bawah ini
 [1] daftar dosen
 [2] cari dosen
@@ -51,7 +53,7 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
-let listJurusan = `${space}
+const listJurusan = `${space}
 silahkan pilih opsi di bawah ini
 [1] daftar jurusan
 [2] cari jurusan
@@ -60,7 +62,7 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
-let listMatkul = `${space}
+const listMatkul = `${space}
 silahkan pilih opsi di bawah ini
 [1] daftar mata kuliah
 [2] cari mata kuliah
@@ -69,7 +71,7 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
-let listKontrak = `${space}
+const listKontrak = `${space}
 silahkan pilih opsi di bawah ini
 [1] daftar kontrak mata kuliah
 [2] cari kontrak mata kuliah
@@ -78,6 +80,7 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
+// function for doing menu
 const menuMhs = () => {
     console.log(listMhs);
     rl.question('masukkan opsi: ', (answer) => {
@@ -640,7 +643,7 @@ const menuKontrak = () => {
             case '5':
                 menu();
                 break;
-                
+
             default:
                 console.log('Baru ada fitur read aja ya broo wkwkw, sabar');
                 menuKontrak();
@@ -704,6 +707,7 @@ const menu = () => {
     });
 }
 
+// login and first eksecution
 console.log(msg);
 
 rl.question('username: ', (answer) => {
