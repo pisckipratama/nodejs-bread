@@ -51,7 +51,7 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
-function menuMhs() {
+const menuMhs = () => {
     console.log(listMhs);
     rl.question('masukkan opsi: ', (answer) => {
         switch (answer) {
@@ -190,7 +190,7 @@ function menuMhs() {
     })
 }
 
-function menuDosen() {
+const menuDosen = () => {
     console.log(listDosen);
     rl.question('masukkan opsi: ', (answer) => {
         switch (answer) {
