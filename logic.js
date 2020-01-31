@@ -51,6 +51,15 @@ silahkan pilih opsi di bawah ini
 [5] kembali
 ${space}`
 
+let listJurusan = `${space}
+silahkan pilih opsi di bawah ini
+[1] daftar jurusan
+[2] cari jurusan
+[3] tambah jurusan
+[4] hapus jurusan
+[5] kembali
+${space}`
+
 const menuMhs = () => {
     console.log(listMhs);
     rl.question('masukkan opsi: ', (answer) => {
@@ -185,6 +194,136 @@ const menuMhs = () => {
             default:
                 console.log('List yang dimaksud tidak ada');
                 menuMhs();
+                break;
+        }
+    })
+}
+
+const menuJurusan = () => {
+    console.log(listJurusan);
+    rl.question('masukkan opsi: ', (answer) => {
+        switch (answer) {
+            case '1':
+                let table = new Table({
+                    head: ['ID', 'Nama Jurusan'],
+                    colWidths: [7, 20]
+                })
+                db.serialize(() => {
+                    let sql = 'select * from jurusan';
+                    db.all(sql, (err, rows) => {
+                        if (err) throw err;
+                        if (rows) {
+                            rows.forEach(jur => {
+                                table.push(
+                                    [`${jur.id_jurusan}`, `${jur.nama_jurusan}`]
+                                )
+                            })
+                            console.log(`${table.toString()}`);
+                            menuJurusan();
+                        }
+                    })
+                });
+                break;
+
+            case '2':
+                console.log(space);
+                rl.question('masukkan id: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `select * from jurusan where id_jurusan=${parseInt(ans)}`;
+                        db.all(sql, (err, rows) => {
+                            if (err) throw err;
+                            if (rows.length === 1) {
+                                console.log(space);
+                                console.log('jurusan details')
+                                console.log(space);
+                                rows.forEach(jur => {
+                                    console.log(`id\t: ${jur.id_jurusan}\nID\t: ${jur.nama_jurusan}`);
+                                })
+                                menuJurusan();
+                            } else {
+                                console.log(`Jurusan dengan ID: ${ans} tidak terdaftar`);
+                                menuJurusan();
+                            }
+                        })
+                    });
+                })
+                break;
+
+            case '3':
+                let table2 = new Table({
+                    head: ['ID', 'Nama Jurusan'],
+                    colWidths: [7, 20]
+                })
+                console.log(space);
+                console.log('lengkapi data dibawah ini: ');
+                let forAddJurusan = {
+                    id: 0,
+                    name: '',
+                };
+                rl.question('ID: ', (answer) => {
+                    forAddJurusan.id = parseInt(answer);
+                    rl.question('Nama: ', (answer) => {
+                        forAddJurusan.name = answer;
+                        db.serialize(() => {
+                            let sql = `insert into jurusan(id_jurusan, nama_jurusan) values(${forAddJurusan.id}, '${forAddJurusan.name}')`;
+                            db.run(sql, (err) => {
+                                if (err) throw err;
+                                let sql = 'select * from jurusan';
+                                db.all(sql, (err, rows) => {
+                                    if (err) throw err;
+                                    if (rows) {
+                                        rows.forEach(jur => {
+                                            table2.push(
+                                                [`${jur.id_jurusan}`, `${jur.nama_jurusan}`]
+                                            )
+                                        })
+                                        console.log(`${table2.toString()}`);
+                                        menuJurusan();
+                                    }
+                                })
+                            })
+                        })
+                    })
+                })
+                break;
+
+            case '4':
+                let table3 = new Table({
+                    head: ['ID', 'Nama Jurusan'],
+                    colWidths: [7, 20]
+                })
+                console.log(space);
+                rl.question('Masukkan ID yang akan dihapus: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `delete from jurusan where id_jurusan=${parseInt(ans)}`;
+                        db.run(sql, (err) => {
+                            if (err) throw err;
+                            console.log(`Jurusan dengan ID: ${ans} telah dihapus`)
+                            console.log(space);
+                            let sql = 'select * from jurusan';
+                            db.all(sql, (err, rows) => {
+                                if (err) throw err;
+                                if (rows) {
+                                    rows.forEach(jur => {
+                                        table3.push(
+                                            [`${jur.id_jurusan}`, `${jur.nama_jurusan}`]
+                                        )
+                                    })
+                                    console.log(`${table3.toString()}`);
+                                    menuJurusan();
+                                }
+                            })
+                        })
+                    })
+                })
+                break;
+
+            case '5':
+                menu();
+                break;
+            default:
+                console.log('List yang dimaksud tidak ada');
+                menuJurusan();
                 break;
         }
     })
@@ -326,6 +465,10 @@ const menu = () => {
         switch (answer) {
             case '1':
                 menuMhs();
+                break;
+
+            case '2':
+                menuJurusan();
                 break;
 
             case '3':
