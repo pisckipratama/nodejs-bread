@@ -664,6 +664,83 @@ const menuKontrak = () => {
                 })
                 break;
 
+            case '3':
+                console.log(space);
+                console.log('lengkapi data dibawah ini: ');
+                let forAddKontrak = {
+                    nim: 0,
+                    id_matkul: 0,
+                    id_dosen: 0,
+                    nilai: ''
+                };
+                let table2 = new Table({
+                    head: ['ID', 'Nilai', 'NIM', 'ID Matkul', 'ID Dosen'],
+                    colWidths: [7, 7, 7, 12, 10]
+                })
+                rl.question('nim: ', (ans) => {
+                    forAddKontrak.nim = parseInt(ans);
+                    rl.question('ID Matkul: ', (ans) => {
+                        forAddKontrak.id_matkul = parseInt(ans);
+                        rl.question('ID Dosen: ', (ans) => {
+                            forAddKontrak.id_dosen = parseInt(ans);
+                            rl.question('Nilai: ', (ans) => {
+                                forAddKontrak.nilai = ans;
+                                db.serialize(() => {
+                                    let sql = `insert into kontrak(nilai, nim, id_matkul, id_dosen) values('${forAddKontrak.nilai}', ${forAddKontrak.nim}, ${forAddKontrak.id_matkul}, ${forAddKontrak.id_dosen})`;
+                                    db.run(sql, (err) => {
+                                        if (err) throw err;
+                                        let sql = 'select * from kontrak';
+                                        db.all(sql, (err, rows) => {
+                                            if (err) throw err;
+                                            if (rows) {
+                                                rows.forEach(kontrak => {
+                                                    table2.push(
+                                                        [`${kontrak.id_kontrak}`, `${kontrak.nilai}`, `${kontrak.nim}`, `${kontrak.id_matkul}`, `${kontrak.id_dosen}`]
+                                                    )
+                                                })
+                                                console.log(`${table2.toString()}`);
+                                                menuKontrak();
+                                            }
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+                break;
+
+            case '4':
+                let table3 = new Table({
+                    head: ['ID', 'Nilai', 'NIM', 'ID Matkul', 'ID Dosen'],
+                    colWidths: [7, 7, 7, 12, 10]
+                })
+                console.log(space);
+                rl.question('Masukkan ID yang akan dihapus: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `delete from kontrak where id_kontrak=${parseInt(ans)}`;
+                        db.run(sql, (err) => {
+                            if (err) throw err;
+                            console.log(`Kontrak dengan ID: ${ans} telah dihapus`)
+                            console.log(space);
+                            let sql = 'select * from kontrak';
+                            db.all(sql, (err, rows) => {
+                                if (err) throw err;
+                                if (rows) {
+                                    rows.forEach(kontrak => {
+                                        table3.push(
+                                            [`${kontrak.id_kontrak}`, `${kontrak.nilai}`, `${kontrak.nim}`, `${kontrak.id_matkul}`, `${kontrak.id_dosen}`]
+                                        )
+                                    })
+                                    console.log(`${table3.toString()}`);
+                                    menuKontrak();
+                                }
+                            })
+                        })
+                    })
+                })
+                break;
+
             case '5':
                 menu();
                 break;
