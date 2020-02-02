@@ -621,7 +621,7 @@ const menuKontrak = () => {
             case '1':
                 let table = new Table({
                     head: ['ID', 'Nilai', 'NIM', 'ID Matkul', 'ID Dosen'],
-                    colWidths: [7, 7, 7, 10, 10]
+                    colWidths: [7, 7, 7, 12, 10]
                 })
                 db.serialize(() => {
                     let sql = 'select * from kontrak';
@@ -639,7 +639,31 @@ const menuKontrak = () => {
                     })
                 });
                 break;
-            
+
+            case '2':
+                console.log(space);
+                rl.question('masukkan NIM: ', (ans) => {
+                    db.serialize(() => {
+                        let sql = `select m.nim, m.nama_mahasiswa, sum(mk.sks) total_sks from mahasiswa m, mata_kuliah mk inner join kontrak k on m.nim = k.nim and mk.id_matkul = k.id_matkul group by m.nim having m.nim = ${ans}`;
+                        db.all(sql, (err, rows) => {
+                            if (err) throw err;
+                            if (rows.length === 1) {
+                                console.log(space);
+                                console.log('mata kuliah details')
+                                console.log(space);
+                                rows.forEach(kontrak => {
+                                    console.log(`ID\t\t: ${kontrak.nim}\nnama\t\t: ${kontrak.nama_mahasiswa}\ntotal sks\t: ${kontrak.total_sks}`);
+                                })
+                                menuKontrak();
+                            } else {
+                                console.log(`mata kuliah dengan ID ${ans} tidak terdaftar`);
+                                menuKontrak();
+                            }
+                        })
+                    });
+                })
+                break;
+
             case '5':
                 menu();
                 break;
